@@ -1,0 +1,8 @@
+{
+    "circles": [
+        { "id": "ring1", "x": 200, "y": 120, "radius": 20},
+        { "id": "ring2", "x": 200, "y": 120, "radius": 40},
+        { "id": "ring3", "x": 200, "y": 120, "radius": 60},
+        { "id": "module1", "parentId": "ring3", "x": 0, "y": 60, "radius": 5}
+    ]
+}
