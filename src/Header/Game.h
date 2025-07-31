@@ -7,6 +7,7 @@ extern "C" {
     #include "pd_api.h"
 }
 #include "Circle.h"
+#include "Emitter.h"
 
 class Game
 {
@@ -19,6 +20,7 @@ public:
 private:
     PlaydateAPI* pd;
     std::vector<GameObject*> gameObjects;
+    Emitter* emitter;
 };
 
 #endif

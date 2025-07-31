@@ -43,3 +43,5 @@
 .vscode/
 .sentry-native/
 build_sim/
+*.pdx/
+*.pdx

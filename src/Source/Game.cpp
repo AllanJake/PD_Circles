@@ -42,6 +42,12 @@ void Game::Init()
             }
         }
     }
+
+    emitter = new Emitter(pd);
+    emitter->localPosition = {-60, 0};
+    emitter->localRotation = 90;
+    emitter->LoadImage();
+    emitter->SetParent(gameObjects[gameObjects.size() - 2]);
 }
 
 void Game::Update()
@@ -49,11 +55,14 @@ void Game::Update()
     pd->graphics->clear(kColorWhite);
     
     float angle = pd->system->getCrankAngle();
-    // mainCircle->localRotation = angle;
 
-    // mainCircle->Update();
     for (auto& go : gameObjects)
     {
         go->Draw();
     }
+
+    gameObjects[gameObjects.size() - 2]->localRotation = angle;
+    //emitter->localRotation = angle;
+    emitter->Update();
+    emitter->Draw();
 }
