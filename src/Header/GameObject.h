@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <cmath>
+#include <string>
 
 struct Vec2 {
     float x;
@@ -26,14 +27,22 @@ public:
     Vec2 GetWorldPosition() const;
     float GetWorldRotation() const;
 
+    bool IsCircleCollision();
+    void SetRadius(float value);
+    float GetRadius();
+    Vec2 GetAABBMin();
+    Vec2 GetAABBMax();
+    
     Vec2 localPosition;
     float localRotation;
+    std::vector<std::string> tags;
 
 private:
     GameObject* parent;
     std::vector<GameObject*> children;
     float M_PI = 3.14;
-
-};
+    bool isCircle = true;
+    float collisionRadius;
+};  
 
 #endif

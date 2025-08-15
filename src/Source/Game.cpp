@@ -25,6 +25,8 @@ void Game::Init()
         const auto& d = level1[i];
         Circle* circle = new Circle(pd, d.radius);
         circle->localPosition = {d.x, d.y};
+        circle->tags = d.tags;
+        circle->SetRadius(d.radius);
 
         circleMap[d.id] = circle;
         gameObjects.push_back(circle);
@@ -48,6 +50,7 @@ void Game::Init()
     emitter->localRotation = 90;
     emitter->LoadImage();
     emitter->SetParent(gameObjects[gameObjects.size() - 2]);
+    emitter->gos = gameObjects;
 }
 
 void Game::Update()

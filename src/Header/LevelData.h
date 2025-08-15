@@ -1,5 +1,7 @@
 #pragma once
 #include <cstddef>
+#include <vector>
+#include <string>
 
 struct CircleLevelData {
     const char* id;
@@ -7,6 +9,7 @@ struct CircleLevelData {
     float x;
     float y;
     float radius;
+    std::vector<std::string> tags;
 };
 
 extern const CircleLevelData level1[];

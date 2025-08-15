@@ -54,3 +54,18 @@ void GameObject::Draw() {
         child->Draw();
     }
 }
+
+bool GameObject::IsCircleCollision()
+{
+    return isCircle;
+}
+
+void GameObject::SetRadius(float value)
+{
+    collisionRadius = value;
+}
+
+float GameObject::GetRadius()
+{
+    return collisionRadius;
+}
