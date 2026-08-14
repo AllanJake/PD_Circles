@@ -1,8 +1,10 @@
 #include "../Header/Game.h"
 
-#include "../Header/LevelData.h"
+#include "../Header/LevelLoader.h"
+// #include "../Header/LevelData.h"
 #include <unordered_map>
 #include <string>
+#include <vector>
 
 Game::Game(PlaydateAPI* pd) 
     : pd(pd)
@@ -17,13 +19,18 @@ Game::~Game()
 
 void Game::Init()
 {
+    std::vector<CircleLevelData> levelData;
+    if (!LevelLoader::LoadLevel(pd, "Levels/level1.json", levelData))
+    {
+        pd->system->logToConsole("Level load failed; Game::Init aborted");
+        return;
+    }
+
     std::unordered_map<std::string, Circle*> circleMap;
 
     // Create all objects
-    for(size_t i = 0; i < level1Size; i++)
-    {
-        const auto& d = level1[i];
-        Circle* circle = new Circle(pd, d.radius);
+    for (const CircleLevelData& d : levelData) {
+        Circle* circle = new Circle(pd, static_cast<int>(d.radius));
         circle->localPosition = {d.x, d.y};
         circle->tags = d.tags;
         circle->SetRadius(d.radius);
@@ -33,9 +40,9 @@ void Game::Init()
     }
 
     // Setup hierarchy
-    for (size_t i = 0; i < level1Size; i++) {
-        const auto& d = level1[i];
-        if (d.parentId)
+    for (size_t i = 0; i < levelData.size(); i++) {
+        const auto& d = levelData[i];
+        if (!d.parentId.empty())
         {
             Circle* child = circleMap[d.id];
             Circle* parent = circleMap[d.parentId];

@@ -4,13 +4,10 @@
 #include <string>
 
 struct CircleLevelData {
-    const char* id;
-    const char* parentId;
-    float x;
-    float y;
-    float radius;
+    std::string id;
+    std::string parentId;
+    float x = 0.0f;
+    float y = 0.0f;
+    float radius = 0.0f;
     std::vector<std::string> tags;
 };
-
-extern const CircleLevelData level1[];
-extern const size_t level1Size;

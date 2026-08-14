@@ -35,6 +35,7 @@ project(${PLAYDATE_GAME_NAME} CXX ASM)
 # Collect all source and header files
 file(GLOB_RECURSE SOURCE_FILES
     src/Source/*.cpp
+	src/Header/*.h
     src/Header/*.hpp
 )
 
@@ -45,15 +46,15 @@ else()
 endif()
 
 # Custom command for converting JSON Level files to CPP
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/Source/LevelData.cpp
-	COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/tools/jsonToCPP.py
-	DEPENDS levels/level1.json tools/jsonToCPP.py
-	COMMENT "Generating C++ Level Data from JSON"
-)
+# add_custom_command(
+# 	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/Source/LevelData.cpp
+# 	COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/tools/jsonToCPP.py
+# 	DEPENDS levels/level1.json tools/jsonToCPP.py
+# 	COMMENT "Generating C++ Level Data from JSON"
+# )
 
-add_custom_target(generate_levels DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/Source/LevelData.cpp)
-add_dependencies(${PLAYDATE_GAME_NAME} generate_levels)
+# add_custom_target(generate_levels DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/Source/LevelData.cpp)
+# add_dependencies(${PLAYDATE_GAME_NAME} generate_levels)
 
 # Ensures default visibility (safe fallback)
 add_compile_options(-fvisibility=hidden)
