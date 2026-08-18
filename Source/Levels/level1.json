@@ -1,8 +1,35 @@
 {
     "circles": [
-        { "id": "ring1", "class": "ring", "x": 200, "y": 120, "radius": 20},
-        { "id": "ring2", "class": "ring", "x": 200, "y": 120, "radius": 40},
-        { "id": "ring3", "class": "ring", "x": 200, "y": 120, "radius": 100},
-        { "id": "module1", "class": "module", "parentId": "ring2", "x": 0, "y": -40, "radius": 5, "tags": ["module"]}
+        {
+            "id": "ring1",
+            "class": "ring",
+            "x": 200,
+            "y": 120,
+            "radius": 20
+        },
+        {
+            "id": "ring2",
+            "class": "ring",
+            "x": 200,
+            "y": 120,
+            "radius": 40
+        },
+        {
+            "id": "ring3",
+            "class": "ring",
+            "x": 200,
+            "y": 120,
+            "radius": 60,
+            "modules": [
+                {
+                    "id": "emitter1",
+                    "type": "emitter",
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 90,
+                    "tags": ["module"]
+                }
+            ]
+        }
     ]
 }

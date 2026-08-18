@@ -52,12 +52,49 @@ void Game::Init()
         }
     }
 
-    emitter = new Emitter(pd);
-    emitter->localPosition = {-60, 0};
-    emitter->localRotation = 90;
-    emitter->LoadImage();
-    emitter->SetParent(gameObjects[gameObjects.size() - 2]);
-    emitter->gos = gameObjects;
+    // Create modules after the circles, so every module can parent to it's owning circle
+    for (const CircleLevelData& circleData : levelData) {
+        Circle* parentCircle = circleMap[circleData.id];
+        if (!parentCircle) continue;
+
+        for (const ModuleLevelData& moduleData : circleData.modules) {
+            GameObject* moduleObject = nullptr;
+            switch (moduleData.kind) {
+                case ModuleKind::Emitter:
+                {
+                    Emitter* e = new Emitter(pd);
+                    e->localPosition = {moduleData.x, moduleData.y};
+                    e->localRotation = moduleData.rotation;
+                    e->tags = moduleData.tags;
+                    e->LoadImage();
+
+                    moduleObject = e;
+                    break;
+                }
+                case ModuleKind::Blocker:
+                {
+                    pd->system->logToConsole("Blocker module parsed, but Blocker class not implemented");
+                    break;
+                }
+                case ModuleKind::Receiver:
+                {
+                    pd->system->logToConsole("Receiver module parsed, but Receiver class not implemented");
+                    break;
+                }
+                case ModuleKind::Unknown:
+                {
+                        pd->system->logToConsole("Unknown module type in level JSON");
+                    break;
+                }
+            }
+
+            if (moduleObject) 
+            {
+                moduleObject->SetParent(parentCircle);
+                gameObjects.push_back(moduleObject);
+            }
+        }
+    }
 }
 
 void Game::Update()
@@ -71,8 +108,8 @@ void Game::Update()
         go->Draw();
     }
 
-    gameObjects[gameObjects.size() - 2]->localRotation = angle;
-    //emitter->localRotation = angle;
-    emitter->Update();
-    emitter->Draw();
+    // gameObjects[gameObjects.size() - 2]->localRotation = angle;
+    // //emitter->localRotation = angle;
+    // emitter->Update();
+    // emitter->Draw();
 }

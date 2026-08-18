@@ -9,10 +9,29 @@ struct ParseState {
     std::vector<CircleLevelData>* circles = nullptr;
 
     CircleLevelData currentCircle;
+    ModuleLevelData currentModule;
+
     bool insideCirclesArray = false;
     bool insideCircleObject = false;
     bool insideTagsArray = false;
+
+    bool insideModulesArray = false;
+    bool insideMoudleObject = false;
+    bool insideModuleTagsArray = false;
 };
+
+ModuleKind ParseModuleKind(const char* value) {
+    if (!value) return ModuleKind::Unknown;
+
+    if (std::strcmp(value, "emitter") == 0)
+        return ModuleKind::Emitter;
+    if (std::strcmp(value, "blocker") == 0)
+        return ModuleKind::Blocker;
+    if (std::strcmp(value, "receiver") == 0)
+        return ModuleKind::Receiver;
+
+    return ModuleKind::Unknown;
+}
 
 int ReadFileForJson(void* userdata, uint8_t* buf, int bufSize) {
     PlaydateAPI* pd = nullptr;
@@ -46,6 +65,22 @@ void WillDecodeSublist(json_decoder* decoder, const char* name, json_value_type 
         return;
     }
 
+    if (state->insideCircleObject && name && std::strcmp(name, "modules") == 0 && type == kJSONArray) {
+        state->insideMoudlesArray = true;
+        return;
+    }
+
+    if (state->insideModulesArray && type == kJSONTable) {
+        state->currentModule = ModuleLevelData();
+        state->insideModuleObject = true;
+        return;
+    }
+
+    if (state->insideModuleObject && name && std::strcmp(name, "tags") == 0 && type == kJSONArray) {
+        state->insideModuleTagsArray = true;
+        return;
+    }
+
     // Each item inside circels is an object/table
     // Depending on SDK internals, array item names may be null, so this
     // intentionally keys off the fact that we are currently inside circles
@@ -64,7 +99,34 @@ void WillDecodeSublist(json_decoder* decoder, const char* name, json_value_type 
 }
 void DidDecodeTableValue(json_decoder* decoder, const char* key, json_value value) {
     auto* state = static_cast<ParseState*>(decoder->userdata);
-    if (!state || !state->insideCircleObject || !key) return;
+    if (!state || !key) return;
+
+    if (state->insideModuleObject) {
+        ModuleLevelData& m_module = state->currentModule;
+
+        if (std::strcmp(key, "id") == 0) {
+            m_module.id = json_stringValue(value) ? json_stringValue : "";
+        }
+        else if (std::strcmp(key, "type") == 0) {
+            m_module.kind = ParseModuleKind(json_stringValue(value));
+        }
+        else if (std::strcmp(key, "x") == 0) {
+            m_module.x = json_floatValue(value);
+        }
+        else if (std::strcmp(key, "y") == 0) {
+            m_module.y = json_floatValue(value);
+        }
+        else if (std::strcmp(key, "rotation") == 0) {
+            m_module.rotation = json_floatValue(value);
+        }
+        else if (std::strcmp(key, "radius") == 0) {
+            m_module.radius = json_floatValue(value);
+        }
+
+        return;
+    }
+
+    if (!state->insideCircleObject) return;
 
     CircleLevelData& circle = state->currentCircle;
 
@@ -91,18 +153,46 @@ void DidDecodeTableValue(json_decoder* decoder, const char* key, json_value valu
 
 void DidDecodeArrayValue(json_decoder* decoder, int pos, json_value value) {
     auto* state = static_cast<ParseState*>(decoder->userdata);
-    if (!state) return;
+    if (!state || value.type != kJSONString) return;
 
-    if (state->insideTagsArray && value.type == kJSONString) {
-        if (char* s = json_stringValue(value)) {
-            state->currentCircle.tags.push_back(s);
-        }
+    char* s = json_stringValue(value);
+    if (!s) return;
+
+    if (state->insideModuleTagsArray) {
+        state->currentModule.tags.push_back(s);
+        return;
+    }
+
+    if (state->insideTagsArray) {
+        state->currentCircle.tags.push_back(s);
+        return;
     }
 }
 
 void* DidDecodeSublist(json_decoder* decoder, const char* name, json_value_type type) {
     auto* state = static_cast<ParseState*>(decoder->userdata);
     if (!state) return nullptr;
+
+    if (state->insideModuleTagsArray && type == kJSONArray) {
+        state->insideModuleTagsArray = false;
+        return nullptr;
+    }
+
+    if (state->insideModuleObject && type == kJSONTable) {
+        if (!state->currentModule.id.empty() && state->currentModule.kine != ModuleKind::Unknown) {
+            state->currentCircle.modules.push_back(state->currentModule);
+        }
+        else if (state->pd) {
+            state->pd->system->logToConsole("Skipped module with missing id or unknown type");
+        }
+        state->insideModuleObject = false;
+        return nullptr;
+    }
+
+    if (state->insideModulesArray && type == kJSONArray) {
+        state->insideModulesArray = false;
+        return nullptr;
+    }
 
     if (state->insideTagsArray && type == kJSONArray) {
         state->insideTagsArray = false;
