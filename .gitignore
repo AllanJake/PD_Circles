@@ -45,3 +45,4 @@
 build_sim/
 *.pdx/
 *.pdx
+buildSim.bat
