@@ -16,7 +16,7 @@ struct ParseState {
     bool insideTagsArray = false;
 
     bool insideModulesArray = false;
-    bool insideMoudleObject = false;
+    bool insideModuleObject = false;
     bool insideModuleTagsArray = false;
 };
 
@@ -66,12 +66,12 @@ void WillDecodeSublist(json_decoder* decoder, const char* name, json_value_type 
     }
 
     if (state->insideCircleObject && name && std::strcmp(name, "modules") == 0 && type == kJSONArray) {
-        state->insideMoudlesArray = true;
+        state->insideModulesArray = true;
         return;
     }
 
     if (state->insideModulesArray && type == kJSONTable) {
-        state->currentModule = ModuleLevelData();
+        state->currentModule = ModuleLevelData{};
         state->insideModuleObject = true;
         return;
     }
@@ -105,7 +105,7 @@ void DidDecodeTableValue(json_decoder* decoder, const char* key, json_value valu
         ModuleLevelData& m_module = state->currentModule;
 
         if (std::strcmp(key, "id") == 0) {
-            m_module.id = json_stringValue(value) ? json_stringValue : "";
+            m_module.id = json_stringValue(value) ? json_stringValue(value) : "";
         }
         else if (std::strcmp(key, "type") == 0) {
             m_module.kind = ParseModuleKind(json_stringValue(value));
@@ -179,7 +179,7 @@ void* DidDecodeSublist(json_decoder* decoder, const char* name, json_value_type 
     }
 
     if (state->insideModuleObject && type == kJSONTable) {
-        if (!state->currentModule.id.empty() && state->currentModule.kine != ModuleKind::Unknown) {
+        if (!state->currentModule.id.empty() && state->currentModule.kind != ModuleKind::Unknown) {
             state->currentCircle.modules.push_back(state->currentModule);
         }
         else if (state->pd) {

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
@@ -10,7 +11,7 @@ if (NOT ${ENVSDK} STREQUAL "")
 	file(TO_CMAKE_PATH ${ENVSDK} SDK)
 else()
 	execute_process(
-			COMMAND bash -c "egrep '^\\s*SDKRoot' $HOME/.Playdate/config"
+			COMMAND bash -c "egrep '^/s*SDKRoot' $HOME/.Playdate/config"
 			COMMAND head -n 1
 			COMMAND cut -c9-
 			OUTPUT_VARIABLE SDK
@@ -41,20 +42,16 @@ file(GLOB_RECURSE SOURCE_FILES
 
 if (TOOLCHAIN STREQUAL "armgcc")
 	add_executable(${PLAYDATE_GAME_DEVICE} ${SOURCE_FILES})
+	target_include_directories(${PLAYDATE_GAME_DEVICE} PRIVATE 
+		"${SDK}/C_API"
+	)
 else()
 	add_library(${PLAYDATE_GAME_NAME} SHARED ${SOURCE_FILES})
+	target_include_directories(${PLAYDATE_GAME_NAME} PRIVATE 
+		"${SDK}/C_API"
+	)
 endif()
 
-# Custom command for converting JSON Level files to CPP
-# add_custom_command(
-# 	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/Source/LevelData.cpp
-# 	COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/tools/jsonToCPP.py
-# 	DEPENDS levels/level1.json tools/jsonToCPP.py
-# 	COMMENT "Generating C++ Level Data from JSON"
-# )
-
-# add_custom_target(generate_levels DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/Source/LevelData.cpp)
-# add_dependencies(${PLAYDATE_GAME_NAME} generate_levels)
 
 # Ensures default visibility (safe fallback)
 add_compile_options(-fvisibility=hidden)

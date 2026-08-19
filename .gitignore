@@ -45,4 +45,7 @@
 build_sim/
 *.pdx/
 *.pdx
-buildSim.bat
+build/
+*.bat
+*.batch
+*.log

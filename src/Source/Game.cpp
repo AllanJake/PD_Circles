@@ -1,7 +1,7 @@
 #include "../Header/Game.h"
 
 #include "../Header/LevelLoader.h"
-// #include "../Header/LevelData.h"
+#include "../Header/LevelData.h"
 #include <unordered_map>
 #include <string>
 #include <vector>
@@ -103,13 +103,13 @@ void Game::Update()
     
     float angle = pd->system->getCrankAngle();
 
-    for (auto& go : gameObjects)
-    {
-        go->Draw();
+    if (gameObjects.size() >= 3) {
+        gameObjects[2]->localRotation = angle;
     }
 
-    // gameObjects[gameObjects.size() - 2]->localRotation = angle;
-    // //emitter->localRotation = angle;
-    // emitter->Update();
-    // emitter->Draw();
+    for (auto& go : gameObjects)
+    {
+        go->Update();
+        go->Draw();
+    }
 }

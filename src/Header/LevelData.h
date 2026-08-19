@@ -19,7 +19,7 @@ struct ModuleLevelData {
     float rotation = 0.0f;
     float radius = 0.0f;
     std::vector<std::string> tags;
-}
+};
 
 struct CircleLevelData {
     std::string id;
