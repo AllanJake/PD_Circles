@@ -67,7 +67,7 @@ void Emitter::DrawLaser()
                 if (go->IsCircleCollision())
                 {
                     Vec2 center = go->GetWorldPosition();
-                    float radius = go->GetRadius();
+                    float radius = go->GetCollisionRadius();
                     float t;
                     if (IntersectCircle(origin, rightVector, center, radius, t))
                     {
@@ -83,7 +83,7 @@ void Emitter::DrawLaser()
     }
     
     Vec2 dest = {origin.x + rightVector.x * closestT, origin.y + rightVector.y * closestT};
-    pd->graphics->drawLine(origin.x, origin.y, dest.x, dest.y, 2.5, kColorBlack);
+    pd->graphics->drawLine(origin.x, origin.y, dest.x, dest.y, 2.5f, kColorBlack);
 }
 
 bool Emitter::IntersectCircle(const Vec2& origin, const Vec2& dir, const Vec2& center, float radius, float& outT)

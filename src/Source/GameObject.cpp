@@ -57,7 +57,7 @@ void GameObject::Draw() {
 
 bool GameObject::IsCircleCollision()
 {
-    return isCircle;
+    return isCircleCollision;
 }
 
 void GameObject::SetRadius(float value)
@@ -65,7 +65,12 @@ void GameObject::SetRadius(float value)
     collisionRadius = value;
 }
 
-float GameObject::GetRadius()
+float GameObject::GetCollisionRadius()
 {
     return collisionRadius;
+}
+
+float GameObject::DEG2RAD(float degrees)
+{
+    return degrees * (M_PI / 180);
 }

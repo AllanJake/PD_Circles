@@ -116,6 +116,9 @@ void DidDecodeTableValue(json_decoder* decoder, const char* key, json_value valu
         else if (std::strcmp(key, "y") == 0) {
             m_module.y = json_floatValue(value);
         }
+        else if (std::strcmp(key, "startAngle") == 0) {
+            m_module.startAngle = json_floatValue(value);
+        }
         else if (std::strcmp(key, "rotation") == 0) {
             m_module.rotation = json_floatValue(value);
         }

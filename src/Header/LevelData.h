@@ -16,6 +16,7 @@ struct ModuleLevelData {
     ModuleKind kind = ModuleKind::Unknown;
     float x = 0.0f;
     float y = 0.0f;
+    float startAngle = 0.0f;
     float rotation = 0.0f;
     float radius = 0.0f;
     std::vector<std::string> tags;

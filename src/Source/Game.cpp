@@ -91,6 +91,8 @@ void Game::Init()
             if (moduleObject) 
             {
                 moduleObject->SetParent(parentCircle);
+                Module* module = dynamic_cast<Module*>(moduleObject);
+                module->Init(moduleData.startAngle);
                 gameObjects.push_back(moduleObject);
             }
         }

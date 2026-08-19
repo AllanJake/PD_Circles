@@ -16,6 +16,7 @@ public:
     ~Circle();
     void Update() override;
     void Draw() override;
+    int GetRadius() { return radius; };
 
 private:
     PlaydateAPI* pd;

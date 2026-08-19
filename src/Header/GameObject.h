@@ -29,19 +29,23 @@ public:
 
     bool IsCircleCollision();
     void SetRadius(float value);
-    float GetRadius();
+    float GetCollisionRadius();
     Vec2 GetAABBMin();
     Vec2 GetAABBMax();
+
     
     Vec2 localPosition;
     float localRotation;
     std::vector<std::string> tags;
-
-private:
+    
+protected:
     GameObject* parent;
     std::vector<GameObject*> children;
-    float M_PI = 3.14;
-    bool isCircle = true;
+    float M_PI = 3.14f;
+    float DEG2RAD(float degrees);
+
+private:
+    bool isCircleCollision = true;
     float collisionRadius;
 };  
 

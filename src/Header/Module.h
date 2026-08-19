@@ -21,6 +21,7 @@ class Module : public GameObject
 public:
     Module(PlaydateAPI* pd);
     ~Module();
+    void Init(float startAngle);
     //LCDBitmap* bmp;
 protected:
     std::unique_ptr<PlaydateAPI> pd;
@@ -28,7 +29,9 @@ protected:
     LCDSprite* sprite;
     
     
-    private:
+private:
+    float _startAngle = 0.0f;
+    void SetStartPosition();
 };
 
 #endif

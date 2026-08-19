@@ -4,14 +4,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 
-set(ENVSDK $ENV{PLAYDATE_SDK_PATH})
-
-if (NOT ${ENVSDK} STREQUAL "")
+if (NOT "$ENV{PLAYDATE_SDK_PATH}" STREQUAL "")
 	# Convert path from Windows
-	file(TO_CMAKE_PATH ${ENVSDK} SDK)
+	file(TO_CMAKE_PATH "$ENV{PLAYDATE_SDK_PATH}" SDK)
 else()
 	execute_process(
-			COMMAND bash -c "egrep '^/s*SDKRoot' $HOME/.Playdate/config"
+			COMMAND bash -c "grep '^SDKRoot' \"$HOME/.Playdate/config\" | head -n 1 | cut -c9-"
 			COMMAND head -n 1
 			COMMAND cut -c9-
 			OUTPUT_VARIABLE SDK
@@ -29,7 +27,7 @@ set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
 
 # Game Name Customization
 set(PLAYDATE_GAME_NAME C_Circles)
-set(PLAYDATE_GAME_DEVICE PLAYDATE_GAME_NAME_DEVICE)
+set(PLAYDATE_GAME_DEVICE ${PLAYDATE_GAME_NAME}_DEVICE)
 
 project(${PLAYDATE_GAME_NAME} CXX ASM)
 
