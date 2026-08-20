@@ -44,15 +44,11 @@ float GameObject::GetWorldRotation() const {
 }
 
 void GameObject::Update() {
-    for (auto* child : children) {
-        child->Update();
-    }
+    
 }
 
 void GameObject::Draw() {
-    for (auto* child : children) {
-        child->Draw();
-    }
+    
 }
 
 bool GameObject::IsCircleCollision()

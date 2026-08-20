@@ -6,12 +6,32 @@
 #include <string>
 #include <vector>
 
-namespace{
-    bool EndsWith(const std::string& value, const char* suffix);
+namespace {
+    bool EndsWith(const std::string& value, const char* suffix) {
+        std::string s = suffix;
+        if (value.size() < s.size()) return false;
+        return value.compare(value.size() - s.size(), s.size(), s) == 0;
+    }
 
-    void LevelListCallback(const char* filename, void* userdata);
+    void LevelListCallback(const char* filename, void* userdata) {
+        auto* levels = static_cast<std::vector<std::string>*>(userdata);
+        if (!filename) return;
+
+        std::string name = filename;
+
+        if (!name.empty() && name.back() == '/') return;
+
+        if (EndsWith(name, ".json")) {
+            levels->push_back(std::string("Levels/") + name);
+        }
+    }
     
-    void LevelSelectMenuCallback(void* userdata);
+    void LevelSelectMenuCallback(void* userdata) {
+        auto* game = static_cast<Game*>(userdata);
+        if (game) {
+            game->ShowLevelSelect();
+        }
+    }
 }
 
 Game::Game(PlaydateAPI* pd) 
@@ -223,33 +243,5 @@ void Game::ScanLevels() {
 
     if (selectedLevelIndex >= static_cast<int>(levelFiles.size())) {
         selectedLevelIndex = 0;
-    }
-}
-
-namespace {
-    bool EndsWith(const std::string& value, const char* suffix) {
-        std::string s = suffix;
-        if (value.size() < s.size()) return false;
-        return value.compare(value.size() - s.size(), s.size(), s) == 0;
-    }
-
-    void LevelListCallback(const char* filename, void* userdata) {
-        auto* levels = static_cast<std::vector<std::string>*>(userdata);
-        if (!filename) return;
-
-        std::string name = filename;
-
-        if (!name.empty() && name.back() == '/') return;
-
-        if (EndsWith(name, ".json")) {
-            levels->push_back(std::string("Levels/") + name);
-        }
-    }
-    
-    void LevelSelectMenuCallback(void* userdata) {
-        auto* game = static_cast<Game*>(userdata);
-        if (game) {
-            game->ShowLevelSelect();
-        }
     }
 }

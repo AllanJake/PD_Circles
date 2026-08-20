@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <memory>
 #include "GameObject.h"
 
 extern "C" {
@@ -24,7 +23,7 @@ public:
     void Init(float startAngle);
     //LCDBitmap* bmp;
 protected:
-    std::unique_ptr<PlaydateAPI> pd;
+    PlaydateAPI* pd;
     ModuleType _moduleType;
     LCDSprite* sprite;
     
