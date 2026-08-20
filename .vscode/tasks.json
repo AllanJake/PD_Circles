@@ -1,0 +1,53 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build for Simulation",
+            "type": "shell",
+            "command": "${workspaceFolder}\\buildSim.bat",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Builds the project in the build folder using CMake and NMake in the VS Dev Environment"
+        },
+        {
+            "label": "Clean Build for Device",
+            "type": "shell",
+            "command": "${workspaceFolder}\\buildDevice.bat",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Builds the project in the build folder using CMake and NMake in the VS Dev Environment"
+        },
+        {
+            "label": "Simulate Build",
+            "type": "shell",
+            "command": "PlaydateSimulator.exe ${workspaceFolder}.pdx",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Runs the latest build in the simulator."
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "if (Test-Path build_sim) { Remove-Item -Recurse build_sim}; Get-ChildItem -Directory -Filter '*.pdx' | ForEach-Object { Remove-Item -Recurse -Force $_.FullName }"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Removes the build folder and any folder with the extension .pdx"
+        }
+    ]
+}

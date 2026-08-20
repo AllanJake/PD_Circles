@@ -16,7 +16,7 @@ class GameObject
 {
 public:
     GameObject();
-    ~GameObject();
+    virtual ~GameObject();
 
     void SetParent(GameObject* newParent);
     void AddChild(GameObject* child);

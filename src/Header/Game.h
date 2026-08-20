@@ -8,6 +8,8 @@ extern "C" {
 }
 #include "Circle.h"
 #include "Emitter.h"
+#include <string>
+#include <vector>
 
 class Game
 {
@@ -17,10 +19,29 @@ public:
     void Init();
     void Update();
 
+    void ShowLevelSelect();
+    void LoadSelectedLevel();
+
 private:
+    enum class GameState
+    {
+        LevelSelect,
+        Playing
+    };
+
+    void ScanLevels();
+    void DrawLevelSelect();
+    void UpdateLevelSelect();
+    void LoadLevelByPath(const std::string& path);
+    void ClearLevel();
+
     PlaydateAPI* pd;
+    GameState state = GameState::LevelSelect;
+
+    std::vector<std::string> levelFiles;
+    int selectedLevelIndex = 0;
+    
     std::vector<GameObject*> gameObjects;
-    Emitter* emitter;
 };
 
 #endif
