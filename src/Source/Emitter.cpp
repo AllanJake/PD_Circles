@@ -38,6 +38,19 @@ void Emitter::Draw()
     DrawLaser();
 }
 
+bool Emitter::TryGetImageSize(Vec2& outVec)
+{
+    if (bmp == NULL) {
+        return false;
+    }
+
+    int width;
+    int height;
+    pd->graphics->getBitmapData(bmp, &width, &height, nullptr, nullptr, nullptr);
+    outVec = Vec2(width, height);
+    return true;
+}
+
 void Emitter::DrawLaser()
 {
     float laserLength = 120.0f;

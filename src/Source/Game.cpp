@@ -164,11 +164,20 @@ void Game::LoadLevelByPath(const std::string& path) {
                 case ModuleKind::Emitter:
                 {
                     Emitter* e = new Emitter(pd);
-                    e->localPosition = {moduleData.x, moduleData.y};
                     e->localRotation = moduleData.rotation;
                     e->tags = moduleData.tags;
                     e->LoadImage();
 
+                    Vec2 imgSize;
+                    if (e->TryGetImageSize(imgSize)) {
+                        e->localPosition = {moduleData.x - (imgSize.x / 2.0f), moduleData.y - (imgSize.y / 2.0f)};
+                        pd->system->logToConsole("TRUE" );
+                    }
+                    else {
+                        e->localPosition = {moduleData.x, moduleData.y};
+                        pd->system->logToConsole("FALSE" );
+                    }
+                    
                     moduleObject = e;
                     break;
                 }

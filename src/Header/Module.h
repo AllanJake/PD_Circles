@@ -21,12 +21,12 @@ public:
     Module(PlaydateAPI* pd);
     ~Module();
     void Init(float startAngle);
-    //LCDBitmap* bmp;
+    virtual bool TryGetImageSize(Vec2& outVec);
 protected:
     PlaydateAPI* pd;
     ModuleType _moduleType;
     LCDSprite* sprite;
-    
+    // LCDBitmap* bmp;
     
 private:
     float _startAngle = 0.0f;

@@ -19,7 +19,13 @@ void Module::Init(float startAngle) {
     SetStartPosition();
 }
 
-void Module::SetStartPosition() {
+bool Module::TryGetImageSize(Vec2 &outVec)
+{
+    return false;
+}
+
+void Module::SetStartPosition()
+{
     pd->system->logToConsole("Hello");
     if (parent == nullptr) {
         pd->system->logToConsole("A module doesn't have a parent set, Required to find start position.");
@@ -39,5 +45,4 @@ void Module::SetStartPosition() {
         pd->system->logToConsole("Parent is not a circle?");
         return;
     }
-
 }

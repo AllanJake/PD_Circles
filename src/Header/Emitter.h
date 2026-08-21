@@ -15,6 +15,9 @@ public:
     void Draw() override;
 
     std::vector<GameObject*> gos;
+
+    bool TryGetImageSize(Vec2& outVec) override;
+protected:
 private:
     void DrawLaser();
     bool IntersectCircle(const Vec2& origin, const Vec2& dir, const Vec2& center, float radius, float& outT);
