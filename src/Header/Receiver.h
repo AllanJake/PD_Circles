@@ -9,17 +9,16 @@ class Receiver : public Module {
     public:
     Receiver(PlaydateAPI* pd);
     ~Receiver();
-
+    void Init(float startAngle) override;
+    void LoadImage();
     void Update() override;
     void Draw() override;
 
     std::vector<GameObject*> gos;
 
-    bool TryGetImageSize(Vec2& outVec) override;
-
     private:
-    LCDBitmap* bmp;
     Vec2 worldPosition;
+    const char* imagePath = "images/Receiver.png";
 };
 
 #endif

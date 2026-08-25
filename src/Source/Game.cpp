@@ -4,7 +4,7 @@
 #include "../Header/LevelData.h"
 #include <string>
 #include <vector>
-#include <sstream>
+#include <algorithm>
 
 namespace {
     bool EndsWith(const std::string& value, const char* suffix) {
@@ -176,6 +176,8 @@ void Game::LoadLevelByPath(const std::string& path) {
                     
                     moduleObject = e;
                     module = e;
+                    e = nullptr;
+                    delete e;
                     break;
                 }
                 case ModuleKind::Blocker:
@@ -185,7 +187,17 @@ void Game::LoadLevelByPath(const std::string& path) {
                 }
                 case ModuleKind::Receiver:
                 {
-                    pd->system->logToConsole("Receiver module parsed, but Receiver class not implemented");
+                    Receiver* r = new Receiver(pd);
+                    r->localRotation = moduleData.rotation;
+                    r->localPosition = {moduleData.x, moduleData.y};
+                    r->tags = moduleData.tags;
+                    r->LoadImage();
+                    r->SetRadius(8.0f);
+
+                    moduleObject = r;
+                    module = r;
+                    r = nullptr;
+                    delete r;
                     break;
                 }
                 case ModuleKind::Unknown:
@@ -206,6 +218,14 @@ void Game::LoadLevelByPath(const std::string& path) {
     }
     state = GameState::Playing;
     circleMap[selectedStringId]->SetCircleState(Circle::STATE::SELECTED);
+
+    for (GameObject* go : gameObjects)
+    {
+        if (std::find(go->tags.begin(), go->tags.end(), "emitter") != go->tags.end()) {
+            Emitter* em = dynamic_cast<Emitter*>(go);
+            em->gos = gameObjects;
+        }
+    }
 }
 
 void Game::ClearLevel() 

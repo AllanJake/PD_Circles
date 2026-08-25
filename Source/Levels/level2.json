@@ -20,8 +20,8 @@
                     "x": 0,
                     "y": 0,
                     "startAngle": 10,
-                    "rotation": 0,
-                    "tags": ["module"]
+                    "rotation": -10,
+                    "tags": ["module", "emitter"]
                 }
             ]
         },
@@ -30,7 +30,18 @@
             "class": "ring",
             "x": 200,
             "y": 120,
-            "radius": 60
+            "radius": 60,
+            "modules": [
+                {
+                    "id": "receiver1",
+                    "type": "receiver",
+                    "x": 0,
+                    "y": 0,
+                    "startAngle": 90,
+                    "rotation": 0,
+                    "tags": ["module"]
+                }
+            ]
         }
     ]
 }

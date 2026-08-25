@@ -8,6 +8,7 @@ extern "C" {
 }
 #include "Circle.h"
 #include "Emitter.h"
+#include "Receiver.h"
 #include <string>
 #include <vector>
 #include <unordered_map>

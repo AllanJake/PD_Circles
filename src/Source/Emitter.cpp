@@ -34,7 +34,7 @@ void Emitter::Update()
 void Emitter::Draw()
 {
     GameObject::Draw();
-    if (bmp == NULL)
+    if (bmp == nullptr)
     {
         //pd->system->logToConsole("NO FUCKING BMP");
         return;
