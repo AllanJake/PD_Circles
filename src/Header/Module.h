@@ -20,13 +20,14 @@ class Module : public GameObject
 public:
     Module(PlaydateAPI* pd);
     ~Module();
-    void Init(float startAngle);
+    virtual void Init(float startAngle);
+    void LoadModuleImage(const char* path);
     virtual bool TryGetImageSize(Vec2& outVec);
 protected:
     PlaydateAPI* pd;
     ModuleType _moduleType;
     LCDSprite* sprite;
-    // LCDBitmap* bmp;
+    LCDBitmap* bmp = nullptr;
     
 private:
     float _startAngle = 0.0f;

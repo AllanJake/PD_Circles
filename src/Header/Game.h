@@ -10,6 +10,7 @@ extern "C" {
 #include "Emitter.h"
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 class Game
 {
@@ -34,6 +35,8 @@ private:
     void UpdateLevelSelect();
     void LoadLevelByPath(const std::string& path);
     void ClearLevel();
+    void UpdateInput();
+    void UpdateSelectedRing(int index);
 
     PlaydateAPI* pd;
     GameState state = GameState::LevelSelect;
@@ -42,6 +45,10 @@ private:
     int selectedLevelIndex = 0;
     
     std::vector<GameObject*> gameObjects;
+    std::unordered_map<std::string, Circle*> circleMap;
+    int selectedRingIdx = 1;
+    std::string selectedStringId = "ring1";
+    float previousAngle = 0.0f;
 };
 
 #endif

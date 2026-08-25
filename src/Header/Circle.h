@@ -12,15 +12,24 @@ extern "C" {
 class Circle : public GameObject
 {
 public:
+    enum STATE {
+        UNSELECTED,
+        SELECTED,
+        LOCKED
+    };
     Circle(PlaydateAPI* pd, int radius);
     ~Circle();
     void Update() override;
     void Draw() override;
     int GetRadius() { return radius; };
+    void SetCircleState(STATE newState) { circleState = newState; };
+    STATE GetCircleState() { return circleState; };
 
 private:
     PlaydateAPI* pd;
     int radius;
+    
+    STATE circleState = STATE::UNSELECTED;
 };
 
 #endif

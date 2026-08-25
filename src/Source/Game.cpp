@@ -2,9 +2,9 @@
 
 #include "../Header/LevelLoader.h"
 #include "../Header/LevelData.h"
-#include <unordered_map>
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace {
     bool EndsWith(const std::string& value, const char* suffix) {
@@ -32,6 +32,12 @@ namespace {
             game->ShowLevelSelect();
         }
     }
+
+    std::string CreateRingString(int idx) {
+        std::string s = "ring";
+        s.append(std::to_string(idx));
+        return s;
+    }
 }
 
 Game::Game(PlaydateAPI* pd) 
@@ -55,7 +61,7 @@ void Game::Init()
 }
 
 
-
+#pragma region Level Select
 void Game::ShowLevelSelect()
 {
     ClearLevel();
@@ -127,8 +133,6 @@ void Game::LoadLevelByPath(const std::string& path) {
         return;
     }
 
-    std::unordered_map<std::string, Circle*> circleMap;
-
     // Create all objects
     for (const CircleLevelData& d : levelData) {
         Circle* circle = new Circle(pd, static_cast<int>(d.radius));
@@ -160,25 +164,18 @@ void Game::LoadLevelByPath(const std::string& path) {
 
         for (const ModuleLevelData& moduleData : circleData.modules) {
             GameObject* moduleObject = nullptr;
+            Module* module = nullptr;
             switch (moduleData.kind) {
                 case ModuleKind::Emitter:
                 {
                     Emitter* e = new Emitter(pd);
                     e->localRotation = moduleData.rotation;
+                    e->localPosition = {moduleData.x, moduleData.y};
                     e->tags = moduleData.tags;
                     e->LoadImage();
-
-                    Vec2 imgSize;
-                    if (e->TryGetImageSize(imgSize)) {
-                        e->localPosition = {moduleData.x - (imgSize.x / 2.0f), moduleData.y - (imgSize.y / 2.0f)};
-                        pd->system->logToConsole("TRUE" );
-                    }
-                    else {
-                        e->localPosition = {moduleData.x, moduleData.y};
-                        pd->system->logToConsole("FALSE" );
-                    }
                     
                     moduleObject = e;
+                    module = e;
                     break;
                 }
                 case ModuleKind::Blocker:
@@ -198,16 +195,17 @@ void Game::LoadLevelByPath(const std::string& path) {
                 }
             }
 
-            if (moduleObject) 
+            moduleObject->SetParent(parentCircle);
+            if (module != nullptr) 
             {
-                moduleObject->SetParent(parentCircle);
-                Module* module = dynamic_cast<Module*>(moduleObject);
                 module->Init(moduleData.startAngle);
-                gameObjects.push_back(moduleObject);
             }
+            gameObjects.push_back(moduleObject);
+            
         }
     }
     state = GameState::Playing;
+    circleMap[selectedStringId]->SetCircleState(Circle::STATE::SELECTED);
 }
 
 void Game::ClearLevel() 
@@ -219,28 +217,7 @@ void Game::ClearLevel()
     gameObjects.clear();
 }
 
-void Game::Update()
-{
-    if (state == GameState::LevelSelect) {
-        UpdateLevelSelect();
-        return;
-    }
-
-
-    pd->graphics->clear(kColorWhite);
-    
-    float angle = pd->system->getCrankAngle();
-
-    if (gameObjects.size() >= 3) {
-        gameObjects[2]->localRotation = angle;
-    }
-
-    for (auto& go : gameObjects)
-    {
-        go->Update();
-        go->Draw();
-    }
-}
+#pragma endregion // Level Select
 
 void Game::ScanLevels() {
     levelFiles.clear();
@@ -253,4 +230,78 @@ void Game::ScanLevels() {
     if (selectedLevelIndex >= static_cast<int>(levelFiles.size())) {
         selectedLevelIndex = 0;
     }
+}
+
+void Game::Update()
+{
+    if (state == GameState::LevelSelect) {
+        UpdateLevelSelect();
+        return;
+    }
+
+
+    pd->graphics->clear(kColorWhite);
+
+    UpdateInput();
+
+    for (auto& go : gameObjects)
+    {
+        go->Update();
+        go->Draw();
+    }
+}
+
+void Game::UpdateInput() 
+{
+    PDButtons current;
+    PDButtons pushed;
+    PDButtons released;
+    pd->system->getButtonState(&current, &pushed, &released);
+
+    if (pushed & kButtonUp) {
+        UpdateSelectedRing(1);
+    }
+
+    if (pushed & kButtonDown) {
+        UpdateSelectedRing(-1);        
+    }
+
+    float angle = pd->system->getCrankAngle();
+    float angleDelta = angle - previousAngle;
+    circleMap[selectedStringId]->localRotation += angleDelta;
+    previousAngle = angle;
+
+}
+
+void Game::UpdateSelectedRing(int direction) {
+    if (direction > 1 || direction < -1 || direction == 0) return;
+
+    int ringIdx = selectedRingIdx;
+    std::string newCircleId = CreateRingString(ringIdx);
+    int ringCount = static_cast<int>(circleMap.size());
+
+    // Attempt to select the next ring in the direction of choice
+    // Skip the ring if it is locked.
+    for (int attempt = 0; attempt < 10; attempt++) {
+        ringIdx = selectedRingIdx + direction;
+        if (ringIdx > ringCount) ringIdx = 1;
+        if (ringIdx < 1) ringIdx = ringCount;
+        newCircleId = CreateRingString(ringIdx);
+
+        Circle* tempCircle = circleMap[newCircleId];
+        Circle::STATE tempState = tempCircle->GetCircleState();
+        if (tempCircle != nullptr &&
+            tempState != Circle::STATE::LOCKED) {
+            break;
+        }
+    }
+
+    for (const std::pair<std::string, Circle*> c : circleMap)
+    {
+        bool isSelected = c.first == newCircleId;
+        Circle::STATE newState = isSelected ? Circle::STATE::SELECTED : Circle::STATE::UNSELECTED;
+        c.second->SetCircleState(newState);
+    }
+    selectedRingIdx = ringIdx;
+    selectedStringId = newCircleId;
 }

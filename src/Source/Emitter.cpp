@@ -3,20 +3,26 @@
 Emitter::Emitter(PlaydateAPI* pd)
     : Module(pd)
 {
-    
+
 }
 
 Emitter::~Emitter()
 {
 
 }
+
+void Emitter::Init(float startAngle)
+{
+    Module::Init(startAngle);
+
+    // Offset the local position so the emitter draws in the correct place.
+    // This would be better served as a GameObject Pivot position but this works also.
+    localPosition.y -= 3.0f;
+}
+
 void Emitter::LoadImage()
 {
-    const char* err = nullptr;
-    const char* imgPath = "images/Emitter.png";
-    bmp = pd->graphics->loadBitmap(imgPath, &err);
-    if (bmp == nullptr)
-        pd->system->logToConsole("Emitter load error");
+    Module::LoadModuleImage(imagePath);
 }
 
 void Emitter::Update()
@@ -36,19 +42,6 @@ void Emitter::Draw()
     float rot = GetWorldRotation();
     pd->graphics->drawRotatedBitmap(bmp, worldPosition.x, worldPosition.y, rot, 0.5, 0.5, 1, 1);
     DrawLaser();
-}
-
-bool Emitter::TryGetImageSize(Vec2& outVec)
-{
-    if (bmp == NULL) {
-        return false;
-    }
-
-    int width;
-    int height;
-    pd->graphics->getBitmapData(bmp, &width, &height, nullptr, nullptr, nullptr);
-    outVec = Vec2(width, height);
-    return true;
 }
 
 void Emitter::DrawLaser()

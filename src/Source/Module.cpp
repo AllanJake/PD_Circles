@@ -15,18 +15,33 @@ Module::~Module()
 void Module::Init(float startAngle) {
     _startAngle = startAngle;
 
-
     SetStartPosition();
+}
+
+void Module::LoadModuleImage(const char* path)
+{
+    const char* err = nullptr;
+    const char* imgPath = path;
+    bmp = pd->graphics->loadBitmap(imgPath, &err);
+    if (bmp == nullptr)
+        pd->system->logToConsole("Emitter load error");
 }
 
 bool Module::TryGetImageSize(Vec2 &outVec)
 {
-    return false;
+    if (bmp == NULL) {
+        return false;
+    }
+
+    int width;
+    int height;
+    pd->graphics->getBitmapData(bmp, &width, &height, nullptr, nullptr, nullptr);
+    outVec = Vec2(width, height);
+    return true;
 }
 
 void Module::SetStartPosition()
 {
-    pd->system->logToConsole("Hello");
     if (parent == nullptr) {
         pd->system->logToConsole("A module doesn't have a parent set, Required to find start position.");
         return;
@@ -36,10 +51,10 @@ void Module::SetStartPosition()
         Circle* t = static_cast<Circle*>(parent);
         int radius = t->GetRadius();
     
-        float x = sinf(DEG2RAD(_startAngle)) * radius;
-        float y = cosf(DEG2RAD(_startAngle)) * radius;
-        pd->system->logToConsole("{%f, %f}", x, y);
-        localPosition = {x, y};
+        float x = (sinf(DEG2RAD(_startAngle)) * radius);
+        float y = (cosf(DEG2RAD(_startAngle)) * radius);
+        localPosition.x += x;
+        localPosition.y += y;
     }
     else {
         pd->system->logToConsole("Parent is not a circle?");

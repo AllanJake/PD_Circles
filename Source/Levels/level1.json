@@ -26,7 +26,7 @@
                     "type": "emitter",
                     "x": 0,
                     "y": 0,
-                    "startAngle": 10,
+                    "startAngle": 0,
                     "rotation": 0,
                     "tags": ["module"]
                 }
