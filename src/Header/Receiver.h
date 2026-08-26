@@ -14,8 +14,6 @@ class Receiver : public Module {
     void Update() override;
     void Draw() override;
 
-    std::vector<GameObject*> gos;
-
     private:
     Vec2 worldPosition;
     const char* imagePath = "images/Receiver.png";

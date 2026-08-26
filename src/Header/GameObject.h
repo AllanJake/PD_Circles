@@ -6,11 +6,7 @@
 #include <vector>
 #include <cmath>
 #include <string>
-
-struct Vec2 {
-    float x;
-    float y;
-};
+#include "Vector2.h"
 
 class GameObject
 {

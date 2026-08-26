@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Module.h"
+#include "Raycast.h"
 
 class Emitter : public Module
 {
@@ -15,16 +16,17 @@ public:
     void Update() override;
     void Draw() override;
 
-    std::vector<GameObject*> gos;
+    // This is a non-owning pointer since the emitter only reads this list.
+    std::vector<GameObject*>* gos;
 
 protected:
 private:
     void DrawLaser();
-    bool IntersectCircle(const Vec2& origin, const Vec2& dir, const Vec2& center, float radius, float& outT);
-    bool IntersectAABB(const Vec2& origin, const Vec2& dir, const Vec2& min, const Vec2& max, float& outT);
+    bool CollisionCheck(GameObject* go, Vec2 origin, Vec2 rightVector, float& outIntersectDistance);
     // LCDBitmap* bmp;
     Vec2 worldPosition;
     const char* imagePath = "images/Emitter.png";
+    Module* lastModule = nullptr;
 };
 
 #endif

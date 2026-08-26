@@ -47,6 +47,8 @@ private:
     
     std::vector<GameObject*> gameObjects;
     std::unordered_map<std::string, Circle*> circleMap;
+    std::vector<Emitter*> emitters;
+    std::vector<Receiver*> receivers;
     int selectedRingIdx = 1;
     std::string selectedStringId = "ring1";
     float previousAngle = 0.0f;

@@ -2,6 +2,7 @@
 
 #include "../Header/LevelLoader.h"
 #include "../Header/LevelData.h"
+#include "../Header/Raycast.h"
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -176,6 +177,7 @@ void Game::LoadLevelByPath(const std::string& path) {
                     
                     moduleObject = e;
                     module = e;
+                    emitters.push_back(e);
                     e = nullptr;
                     delete e;
                     break;
@@ -196,6 +198,7 @@ void Game::LoadLevelByPath(const std::string& path) {
 
                     moduleObject = r;
                     module = r;
+                    receivers.push_back(r);
                     r = nullptr;
                     delete r;
                     break;
@@ -219,13 +222,12 @@ void Game::LoadLevelByPath(const std::string& path) {
     state = GameState::Playing;
     circleMap[selectedStringId]->SetCircleState(Circle::STATE::SELECTED);
 
-    for (GameObject* go : gameObjects)
-    {
-        if (std::find(go->tags.begin(), go->tags.end(), "emitter") != go->tags.end()) {
-            Emitter* em = dynamic_cast<Emitter*>(go);
-            em->gos = gameObjects;
-        }
-    }
+    // Pass a reference of all game objects to 
+    // for (Emitter* em : emitters)
+    // {
+    //     em->gos = &gameObjects;
+    // }
+    Raycast::gameObjects = &gameObjects;
 }
 
 void Game::ClearLevel() 

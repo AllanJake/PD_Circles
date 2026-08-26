@@ -47,7 +47,7 @@ void Emitter::Draw()
 void Emitter::DrawLaser()
 {
     float laserLength = 120.0f;
-    float closestT = laserLength;
+    float closestIntersectDistance = laserLength;
     
     // Calculate Right Vector
     float angleRad = GetWorldRotation() * (3.141592653589793 / 180.0f);
@@ -59,79 +59,76 @@ void Emitter::DrawLaser()
     int width = -1;
     int height = -1;
     pd->graphics->getBitmapData(bmp, &width, &height, nullptr, nullptr, nullptr);
-    Vec2 origin = {worldPosition.x + (rightVector.x * (width / 2.0)), worldPosition.y + (rightVector.y * (height / 2.0))};
+    Vec2 origin = {worldPosition.x + (rightVector.x * (width / 2.0f)), worldPosition.y + (rightVector.y * (height / 2.0f))};
 
     // Check Collisions before setting the destination. All you should need to change is laser length
-    for (GameObject* go : gos)
-    {
-        if (go == this) continue; // Don't hit self;
+    // for (GameObject* go : *gos)
+    // {
+    //     if (go == this) continue; // Don't hit self;
 
-        for (std::string tag : go->tags)
-        {
-            if (tag == "module")
-            {
-                if (go->IsCircleCollision())
-                {
-                    Vec2 center = go->GetWorldPosition();
-                    float radius = go->GetCollisionRadius();
-                    float t;
-                    if (IntersectCircle(origin, rightVector, center, radius, t))
-                    {
-                        if (t < closestT) closestT = t;
-                    }
-                }
-                else    // Assume AABB
-                {
+    //     bool isModule = std::count(go->tags.begin(), go->tags.end(), "module") > 0;
+        
+    //     if (isModule == false) {
+    //         continue;
+    //     }
 
-                }
-            }
+    //     if (CollisionCheck(go, origin, rightVector, closestIntersectDistance) == false) {
+    //         continue;
+    //     }
+        
+    //     bool isEmitter = std::count(go->tags.begin(), go->tags.end(), "emitter") > 0;
+    //     bool isReceiver = std::count(go->tags.begin(), go->tags.end(), "receiver") > 0;
+        
+    //     if (isEmitter) {
+
+            
+    //     }
+    //     else if (isReceiver) {
+
+    //     }
+    //     else {
+
+    //     }
+    // }
+
+    RaycastHit hit;
+    if (Raycast::LineTrace(origin, rightVector, laserLength, hit)) {
+        int size = static_cast<int>(hit.hitObject->tags.size());
+        if (size >= 0) {
+            pd->system->logToConsole("Hitting %d", size);
+            bool moduleHit = std::count(hit.hitObject->tags.begin(), hit.hitObject->tags.end(), "module") > 0;
+            bool emitterHit = std::count(hit.hitObject->tags.begin(), hit.hitObject->tags.end(), "emitter") > 0;
+            bool receiverHit = std::count(hit.hitObject->tags.begin(), hit.hitObject->tags.end(), "receiver") > 0;
+    
+            if (moduleHit) {
+                closestIntersectDistance = hit.distance;
+                pd->system->logToConsole("Hitting Module. Distance: %f, laserLength: %f", hit.distance, laserLength);
+            } 
         }
     }
     
-    Vec2 dest = {origin.x + rightVector.x * closestT, origin.y + rightVector.y * closestT};
+    Vec2 dest = {origin.x + rightVector.x * closestIntersectDistance, origin.y + rightVector.y * closestIntersectDistance};
     pd->graphics->drawLine(origin.x, origin.y, dest.x, dest.y, 2.5f, kColorBlack);
 }
 
-bool Emitter::IntersectCircle(const Vec2& origin, const Vec2& dir, const Vec2& center, float radius, float& outT)
-{    
-    Vec2 oc = {origin.x - center.x, origin.y - center.y};
-    float b = 2.0f * (oc.x * dir.x + oc.y * dir.y);
-    float c = (oc.x * oc.x + oc.y * oc.y) - radius * radius;
-    float discriminant = b * b - 4 * c;
-
-    if (discriminant < 0) return false;
-    float sqrtDisc = sqrt(discriminant);
-    float t1 = (-b - sqrtDisc) / 2.0f;
-    float t2 = (-b + sqrtDisc) / 2.0f;
-
-    if (t1 >= 0) {
-        outT = t1;
-        return true;
-    }
-    if (t2 >= 0) {
-        outT = t2;
-        return true;
-    }
-    return false;
-}
-
-bool Emitter::IntersectAABB(const Vec2& origin, const Vec2& dir, const Vec2& min, const Vec2& max, float& outT)
+bool Emitter::CollisionCheck(GameObject *go, Vec2 origin, Vec2 rightVector, float& outIntersectDistance)
 {
-    float tMin = (min.x - origin.x) / dir.x;
-    float tMax = (max.x - origin.x) / dir.x;
-    if (tMin > tMax) std::swap(tMin, tMax);
-
-    float tyMin = (min.y - origin.y) / dir.y;
-    float tyMax = (max.y - origin.y) / dir.y;
-    if (tyMin > tyMax) std::swap(tyMin, tyMax);
-
-    if ((tMin > tyMax) || (tyMin > tMax)) return false;
-
-    tMin = std::max(tMin, tyMin);
-    tMax = std::min(tMax, tyMax);
-
-    if (tMax < 0) return false;
-
-    outT = (tMin >= 0) ? tMin : tMax;
-    return outT >= 0;
+    if (go->IsCircleCollision())
+    {
+        Vec2 center = go->GetWorldPosition();
+        float radius = go->GetCollisionRadius();
+        float T;
+        if (IntersectCircle(origin, rightVector, center, radius, T))
+        {
+            if (T < outIntersectDistance) outIntersectDistance = T;
+            return true;
+        }
+    }
+    else    // Assume AABB
+    {
+        outIntersectDistance = outIntersectDistance;
+        return false;
+    }
+    outIntersectDistance = outIntersectDistance;
+    return false;
 }
