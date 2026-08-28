@@ -25,9 +25,10 @@ struct ModuleLevelData {
 struct CircleLevelData {
     std::string id;
     std::string parentId;
-    float x = 0.0f;
-    float y = 0.0f;
-    float radius = 0.0f;
+    int x = 0;
+    int y = 0;
+    int radius = 0;
+    int ringState = 0;
     std::vector<std::string> tags;
     std::vector<ModuleLevelData> modules;
 };

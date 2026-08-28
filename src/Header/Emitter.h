@@ -15,6 +15,8 @@ public:
     void LoadImage();
     void Update() override;
     void Draw() override;
+    void SetModuleActive(bool) override;
+    bool GetLastModuleSet() { return lastModule != nullptr; }
 
     // This is a non-owning pointer since the emitter only reads this list.
     std::vector<GameObject*>* gos;
@@ -22,8 +24,6 @@ public:
 protected:
 private:
     void DrawLaser();
-    bool CollisionCheck(GameObject* go, Vec2 origin, Vec2 rightVector, float& outIntersectDistance);
-    // LCDBitmap* bmp;
     Vec2 worldPosition;
     const char* imagePath = "images/Emitter.png";
     Module* lastModule = nullptr;

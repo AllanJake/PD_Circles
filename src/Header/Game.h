@@ -38,6 +38,8 @@ private:
     void ClearLevel();
     void UpdateInput();
     void UpdateSelectedRing(int index);
+    bool CheckReceivers();
+    void UpdateLevelComplete();
 
     PlaydateAPI* pd;
     GameState state = GameState::LevelSelect;
@@ -50,8 +52,11 @@ private:
     std::vector<Emitter*> emitters;
     std::vector<Receiver*> receivers;
     int selectedRingIdx = 1;
-    std::string selectedStringId = "ring1";
+    std::string selectedStringId = "";
     float previousAngle = 0.0f;
+
+    uint32_t timeComplete = 0;
+    int winGracePeriod = 2000;
 };
 
 #endif

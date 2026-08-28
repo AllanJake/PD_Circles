@@ -5,21 +5,8 @@
             "class": "ring",
             "x": 200,
             "y": 120,
-            "radius": 20
-        },
-        {
-            "id": "ring2",
-            "class": "ring",
-            "x": 200,
-            "y": 120,
-            "radius": 40
-        },
-        {
-            "id": "ring3",
-            "class": "ring",
-            "x": 200,
-            "y": 120,
-            "radius": 60,
+            "radius": 40,
+            "state": 1,
             "modules": [
                 {
                     "id": "emitter1",
@@ -28,7 +15,26 @@
                     "y": 0,
                     "startAngle": 0,
                     "rotation": 0,
-                    "tags": ["module"]
+                    "tags": ["module", "emitter"]
+                }
+            ]
+        },
+        {
+            "id": "ring2",
+            "class": "ring",
+            "x": 200,
+            "y": 120,
+            "radius": 60,
+            "state": 2,
+            "modules": [
+                {
+                    "id": "receiver1",
+                    "type": "receiver",
+                    "x": 0,
+                    "y": 0,
+                    "startAngle": 90,
+                    "rotation": 0,
+                    "tags": ["module", "receiver"]
                 }
             ]
         }

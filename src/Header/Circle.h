@@ -28,6 +28,7 @@ public:
 private:
     PlaydateAPI* pd;
     int radius;
+    int defaultLineWidth = 4;
     
     STATE circleState = STATE::UNSELECTED;
 };

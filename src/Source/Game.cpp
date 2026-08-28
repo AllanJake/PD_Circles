@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <format>
 
 namespace {
     bool EndsWith(const std::string& value, const char* suffix) {
@@ -140,6 +141,19 @@ void Game::LoadLevelByPath(const std::string& path) {
         circle->localPosition = {d.x, d.y};
         circle->tags = d.tags;
         circle->SetRadius(d.radius);
+        int ringState = d.ringState;
+        if (d.ringState == 1) {
+            if (selectedStringId.empty() == false)
+            {
+                pd->system->logToConsole("$s: tried to set itself to selected. But %s is already selected",
+                                                d.id.c_str(), selectedStringId.c_str());
+                ringState = 0;
+            }
+            else {
+                selectedStringId = d.id;
+            }
+        }
+        circle->SetCircleState((Circle::STATE)ringState);
 
         circleMap[d.id] = circle;
         gameObjects.push_back(circle);
@@ -220,6 +234,16 @@ void Game::LoadLevelByPath(const std::string& path) {
         }
     }
     state = GameState::Playing;
+
+    // If no ring is marked as selected. select the first unlocked ring.
+    if (selectedStringId.empty()) {
+        for (auto c : circleMap) {
+            if (c.second->GetCircleState() == Circle::STATE::LOCKED) continue;
+
+            selectedStringId = c.first;
+            break;
+        }
+    }
     circleMap[selectedStringId]->SetCircleState(Circle::STATE::SELECTED);
 
     // Pass a reference of all game objects to 
@@ -264,13 +288,20 @@ void Game::Update()
 
     pd->graphics->clear(kColorWhite);
 
-    UpdateInput();
+    bool gameComplete = CheckReceivers();
+    if (gameComplete) {
+        UpdateLevelComplete();
+    }
+    else {
+        UpdateInput();
+    }
 
     for (auto& go : gameObjects)
     {
         go->Update();
         go->Draw();
     }
+
 }
 
 void Game::UpdateInput() 
@@ -305,7 +336,7 @@ void Game::UpdateSelectedRing(int direction) {
     // Attempt to select the next ring in the direction of choice
     // Skip the ring if it is locked.
     for (int attempt = 0; attempt < 10; attempt++) {
-        ringIdx = selectedRingIdx + direction;
+        ringIdx += direction;
         if (ringIdx > ringCount) ringIdx = 1;
         if (ringIdx < 1) ringIdx = ringCount;
         newCircleId = CreateRingString(ringIdx);
@@ -320,10 +351,29 @@ void Game::UpdateSelectedRing(int direction) {
 
     for (const std::pair<std::string, Circle*> c : circleMap)
     {
+        if (c.second->GetCircleState() == Circle::STATE::LOCKED) continue;
         bool isSelected = c.first == newCircleId;
         Circle::STATE newState = isSelected ? Circle::STATE::SELECTED : Circle::STATE::UNSELECTED;
         c.second->SetCircleState(newState);
     }
     selectedRingIdx = ringIdx;
     selectedStringId = newCircleId;
+}
+
+bool Game::CheckReceivers()
+{
+    return std::all_of(receivers.begin(), receivers.end(), [](Receiver* r) { return r->GetCompleteStatus(); });
+}
+
+void Game::UpdateLevelComplete() {
+    if (timeComplete == 0) {
+        timeComplete = pd->system->getCurrentTimeMilliseconds();
+
+    } 
+    else {
+        uint32_t currentTime = pd->system->getCurrentTimeMilliseconds();
+        if (currentTime - timeComplete >= winGracePeriod) {
+            ShowLevelSelect();
+        }
+    }
 }

@@ -18,24 +18,31 @@ void Circle::Update()
 
 void Circle::Draw() {
     Vec2 pos = GetWorldPosition();
-    float lineWidth = 5.0f;
+    int lineWidth = defaultLineWidth;
     switch (circleState)
     {
         default:
         case STATE::UNSELECTED:
+        {
             pd->graphics->drawEllipse(pos.x - radius, pos.y - radius, radius * 2, radius * 2, lineWidth, 0, 360, kColorBlack);
             break;
+        }
         case STATE::SELECTED:
-            lineWidth = 8.0f;
-            pd->graphics->drawEllipse(pos.x - radius, pos.y - radius, radius * 2, radius * 2, lineWidth, 0, 360, kColorBlack);
+        {
+            lineWidth = 7;
+            int sizeDiff = lineWidth - defaultLineWidth;
+            pd->graphics->drawEllipse(pos.x - radius, pos.y - radius, (radius * 2) + (sizeDiff / 2), (radius * 2) + (sizeDiff / 2), lineWidth, 0, 360, kColorBlack);
             break;
+        }
         case STATE::LOCKED:
-            lineWidth = 1.0f;
-            float majorRad = radius + 1.5f;
-            float minorRad = radius - 1.5f;
+        {
+            lineWidth = 1;
+            int majorRad = radius + 2;
+            int minorRad = radius - 2;
             pd->graphics->drawEllipse(pos.x - minorRad, pos.y - minorRad, minorRad * 2, minorRad * 2, lineWidth, 0, 360, kColorBlack);
             pd->graphics->drawEllipse(pos.x - majorRad, pos.y - majorRad, majorRad * 2, majorRad * 2, lineWidth, 0, 360, kColorBlack);
             break;
+        }
     }
 
     

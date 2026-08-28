@@ -1,4 +1,5 @@
 #include "../Header/Emitter.h"
+#include "../Header/Receiver.h"
 
 Emitter::Emitter(PlaydateAPI* pd)
     : Module(pd)
@@ -61,49 +62,28 @@ void Emitter::DrawLaser()
     pd->graphics->getBitmapData(bmp, &width, &height, nullptr, nullptr, nullptr);
     Vec2 origin = {worldPosition.x + (rightVector.x * (width / 2.0f)), worldPosition.y + (rightVector.y * (height / 2.0f))};
 
-    // Check Collisions before setting the destination. All you should need to change is laser length
-    // for (GameObject* go : *gos)
-    // {
-    //     if (go == this) continue; // Don't hit self;
-
-    //     bool isModule = std::count(go->tags.begin(), go->tags.end(), "module") > 0;
-        
-    //     if (isModule == false) {
-    //         continue;
-    //     }
-
-    //     if (CollisionCheck(go, origin, rightVector, closestIntersectDistance) == false) {
-    //         continue;
-    //     }
-        
-    //     bool isEmitter = std::count(go->tags.begin(), go->tags.end(), "emitter") > 0;
-    //     bool isReceiver = std::count(go->tags.begin(), go->tags.end(), "receiver") > 0;
-        
-    //     if (isEmitter) {
-
-            
-    //     }
-    //     else if (isReceiver) {
-
-    //     }
-    //     else {
-
-    //     }
-    // }
-
     RaycastHit hit;
     if (Raycast::LineTrace(origin, rightVector, laserLength, hit)) {
         int size = static_cast<int>(hit.hitObject->tags.size());
         if (size >= 0) {
-            pd->system->logToConsole("Hitting %d", size);
             bool moduleHit = std::count(hit.hitObject->tags.begin(), hit.hitObject->tags.end(), "module") > 0;
             bool emitterHit = std::count(hit.hitObject->tags.begin(), hit.hitObject->tags.end(), "emitter") > 0;
             bool receiverHit = std::count(hit.hitObject->tags.begin(), hit.hitObject->tags.end(), "receiver") > 0;
-    
+            
             if (moduleHit) {
                 closestIntersectDistance = hit.distance;
-                pd->system->logToConsole("Hitting Module. Distance: %f, laserLength: %f", hit.distance, laserLength);
-            } 
+                Module* hitModule = dynamic_cast<Module*>(hit.hitObject);
+                if (receiverHit) {
+                    hitModule->SetModuleActive(true);
+                    lastModule = hitModule;
+                }
+            }             
+        }
+    }
+    else {
+        if (lastModule != nullptr) {
+            lastModule->SetModuleActive(false);
+            lastModule = nullptr;
         }
     }
     
@@ -111,24 +91,7 @@ void Emitter::DrawLaser()
     pd->graphics->drawLine(origin.x, origin.y, dest.x, dest.y, 2.5f, kColorBlack);
 }
 
-bool Emitter::CollisionCheck(GameObject *go, Vec2 origin, Vec2 rightVector, float& outIntersectDistance)
+void Emitter::SetModuleActive(bool activeState)
 {
-    if (go->IsCircleCollision())
-    {
-        Vec2 center = go->GetWorldPosition();
-        float radius = go->GetCollisionRadius();
-        float T;
-        if (IntersectCircle(origin, rightVector, center, radius, T))
-        {
-            if (T < outIntersectDistance) outIntersectDistance = T;
-            return true;
-        }
-    }
-    else    // Assume AABB
-    {
-        outIntersectDistance = outIntersectDistance;
-        return false;
-    }
-    outIntersectDistance = outIntersectDistance;
-    return false;
+    Module::SetModuleActive(activeState);
 }

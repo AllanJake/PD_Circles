@@ -40,6 +40,10 @@ bool Module::TryGetImageSize(Vec2 &outVec)
     return true;
 }
 
+void Module::SetModuleActive(bool activeState)
+{
+}
+
 void Module::SetStartPosition()
 {
     if (parent == nullptr) {

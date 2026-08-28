@@ -3,6 +3,10 @@
     "tasks": [
         {
             "label": "Build for Simulation",
+            "dependsOn": [
+                "Close Playdate Simulator"
+            ],
+            "dependsOrder": "sequence",
             "type": "shell",
             "command": "${workspaceFolder}\\buildSim.bat",
             "problemMatcher": [],
@@ -48,6 +52,31 @@
                 "isDefault": true
             },
             "detail": "Removes the build folder and any folder with the extension .pdx"
+        },
+        {
+            "label": "Close Playdate Simulator",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "$simulator = @(Get-Process -Name 'PlaydateSimulator' -ErrorAction SilentlyContinue);if ($simulator.Count -gt 0) { $simulator | Stop-Process -Force }; exit 0"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean Build for Simulation",
+            "dependsOn": [
+                "Close Playdate Simulator",
+                "Clean",
+                "Build for Simulation"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

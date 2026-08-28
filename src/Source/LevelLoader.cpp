@@ -144,13 +144,16 @@ void DidDecodeTableValue(json_decoder* decoder, const char* key, json_value valu
         }
     }
     else if (std::strcmp(key, "x") == 0) {
-        circle.x = json_floatValue(value);
+        circle.x = json_intValue(value);
     }
     else if (std::strcmp(key, "y") == 0) {
-        circle.y = json_floatValue(value);
+        circle.y = json_intValue(value);
     }
     else if (std::strcmp(key, "radius") == 0) {
-        circle.radius = json_floatValue(value);
+        circle.radius = json_intValue(value);
+    }
+    else if (std::strcmp(key, "state") == 0) {
+        circle.ringState = json_intValue(value);
     }
 }
 

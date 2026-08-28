@@ -23,6 +23,7 @@ public:
     virtual void Init(float startAngle);
     void LoadModuleImage(const char* path);
     virtual bool TryGetImageSize(Vec2& outVec);
+    virtual void SetModuleActive(bool);
 protected:
     PlaydateAPI* pd;
     ModuleType _moduleType;
