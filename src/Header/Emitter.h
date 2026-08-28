@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Module.h"
-#include "Raycast.h"
+#include "Laser.h"
 
 class Emitter : public Module
 {
@@ -27,6 +27,7 @@ private:
     Vec2 worldPosition;
     const char* imagePath = "images/Emitter.png";
     Module* lastModule = nullptr;
+    Laser* laser = nullptr;
 };
 
 #endif
